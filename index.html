@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta property="og:title" content="PoC">
+    <meta property="og:url" content="рос.com">
+    <meta property="og:image" content="http://placehold.it/486x486">
+    <style>
+      @import(https://fonts.googleapis.com/css?family=Inconsolata);
+      html, body, div, p, a {
+        margin: 0;
+        padding: 0;
+      }
+      #box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 300px;
+        font-family: Inconsolata, monospace;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 30px;
+        color: #333;
+      }
+      a {
+        color: #007BE6;
+        text-decoration: none;
+      }
+      a:hover, a:focus {
+        color: #007BE6;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box">
+      <p>This page is a proof-of-concept for <a href="https://en.wikipedia.org/wiki/IDN_homograph_attack">IDN homograph attack</a>.</p>
+      <p>The actual domain here is <a href="http://xn--n1ade.com">xn--n1ade.com</a>, not <a href="http://poc.com">poc.com</a>.</p>
+      <p>For more information, see <a href="https://xn--e1awd7f.com/">еріс.com</a>.</p>
+    </div>
+  </body>
+</html>
